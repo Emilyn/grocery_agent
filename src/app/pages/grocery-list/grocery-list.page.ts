@@ -1,17 +1,8 @@
 import { Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
+import { addCircleOutline, trashOutline, trashBinOutline } from 'ionicons/icons';
 import {
-  addCircleOutline,
-  trashOutline,
-  trashBinOutline,
-  shareSocialOutline,
-  exitOutline
-} from 'ionicons/icons';
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
   IonList,
   IonItem,
@@ -22,25 +13,24 @@ import {
   IonItemOption,
   IonIcon,
   IonButton,
-  IonButtons,
   IonFooter,
+  IonToolbar,
   IonInput,
   IonSelect,
   IonSelectOption,
   IonNote,
-  IonItemGroup,
-  AlertController
+  IonItemGroup
 } from '@ionic/angular';
+import { ListHeaderComponent } from '../../components/list-header/list-header.component';
 import { GroceryListService } from '../../services/grocery-list.service';
 import { GROCERY_CATEGORIES, GroceryItem } from '../../models/grocery-item.model';
 
 @Component({
   selector: 'app-grocery-list',
+  host: { class: 'ion-page' },
   imports: [
     FormsModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
+    ListHeaderComponent,
     IonContent,
     IonList,
     IonItem,
@@ -51,8 +41,8 @@ import { GROCERY_CATEGORIES, GroceryItem } from '../../models/grocery-item.model
     IonItemOption,
     IonIcon,
     IonButton,
-    IonButtons,
     IonFooter,
+    IonToolbar,
     IonInput,
     IonSelect,
     IonSelectOption,
@@ -64,10 +54,8 @@ import { GROCERY_CATEGORIES, GroceryItem } from '../../models/grocery-item.model
 })
 export class GroceryListPage {
   private readonly groceryList = inject(GroceryListService);
-  private readonly alertController = inject(AlertController);
 
   readonly categories = GROCERY_CATEGORIES;
-  readonly listCode = this.groceryList.listCode;
   newItemName = '';
   newItemQuantity = 1;
   newItemCategory: string = GROCERY_CATEGORIES[0];
@@ -86,7 +74,7 @@ export class GroceryListPage {
   );
 
   constructor() {
-    addIcons({ addCircleOutline, trashOutline, trashBinOutline, shareSocialOutline, exitOutline });
+    addIcons({ addCircleOutline, trashOutline, trashBinOutline });
   }
 
   async addItem(): Promise<void> {
@@ -107,26 +95,5 @@ export class GroceryListPage {
 
   clearChecked(): void {
     void this.groceryList.clearChecked();
-  }
-
-  async showShareCode(): Promise<void> {
-    const alert = await this.alertController.create({
-      header: 'Share this list',
-      message: `Give this code to anyone you want to share the list with:\n\n${this.listCode()}`,
-      buttons: ['OK']
-    });
-    await alert.present();
-  }
-
-  async leaveList(): Promise<void> {
-    const alert = await this.alertController.create({
-      header: 'Leave this list?',
-      message: "You'll need the share code again to rejoin.",
-      buttons: [
-        { text: 'Cancel', role: 'cancel' },
-        { text: 'Leave', role: 'destructive', handler: () => void this.groceryList.leaveList() }
-      ]
-    });
-    await alert.present();
   }
 }

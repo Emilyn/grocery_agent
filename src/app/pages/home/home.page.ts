@@ -1,23 +1,31 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { GroceryListService } from '../../services/grocery-list.service';
+import { ListSessionService } from '../../services/list-session.service';
 import { JoinListPage } from '../join-list/join-list.page';
 import { GroceryListPage } from '../grocery-list/grocery-list.page';
+import { InventoryPage } from '../inventory/inventory.page';
 
 @Component({
   selector: 'app-home',
-  imports: [JoinListPage, GroceryListPage],
+  imports: [JoinListPage, GroceryListPage, InventoryPage],
   template: `
-    @if (groceryList.listCode(); as code) {
-      <app-grocery-list />
+    @if (session.listCode()) {
+      @switch (session.activeTab()) {
+        @case ('inventory') {
+          <app-inventory />
+        }
+        @default {
+          <app-grocery-list />
+        }
+      }
     } @else {
       <app-join-list />
     }
   `
 })
 export class HomePage implements OnInit {
-  readonly groceryList = inject(GroceryListService);
+  readonly session = inject(ListSessionService);
 
   async ngOnInit(): Promise<void> {
-    await this.groceryList.init();
+    await this.session.init();
   }
 }

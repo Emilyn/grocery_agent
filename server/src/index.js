@@ -32,6 +32,37 @@ async function broadcastItems(code, listId) {
   io.to(code).emit('items', items);
 }
 
+function toInventoryDto(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    quantity: row.quantity,
+    weightValue: row.weight_value,
+    weightUnit: row.weight_unit,
+    expiryDate: row.expiry_date,
+    purchaseDate: row.purchase_date,
+    price: row.price
+  };
+}
+
+async function getInventoryItems(listId) {
+  const { rows } = await pool.query(
+    `SELECT id, name, quantity, weight_value, weight_unit, expiry_date, purchase_date, price
+     FROM inventory_items WHERE list_id = $1 ORDER BY expiry_date ASC, created_at ASC`,
+    [listId]
+  );
+  return rows.map(toInventoryDto);
+}
+
+async function broadcastInventory(code, listId) {
+  const items = await getInventoryItems(listId);
+  io.to(code).emit('inventory', items);
+}
+
+function isValidDate(value) {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.post('/api/lists', async (_req, res) => {
@@ -116,6 +147,123 @@ app.post('/api/lists/:code/clear-checked', async (req, res) => {
   res.status(204).end();
 });
 
+app.post('/api/lists/:code/inventory', async (req, res) => {
+  const list = await getListByCode(req.params.code.toUpperCase());
+  if (!list) return res.status(404).json({ error: 'List not found' });
+
+  const { name, quantity, weightValue, weightUnit, expiryDate, purchaseDate, price } = req.body;
+  if (!name || typeof name !== 'string' || !name.trim()) {
+    return res.status(400).json({ error: 'name is required' });
+  }
+  if (!isValidDate(expiryDate)) {
+    return res.status(400).json({ error: 'expiryDate is required and must be YYYY-MM-DD' });
+  }
+  if (purchaseDate != null && !isValidDate(purchaseDate)) {
+    return res.status(400).json({ error: 'purchaseDate must be YYYY-MM-DD' });
+  }
+
+  const item = {
+    id: crypto.randomUUID(),
+    name: name.trim(),
+    quantity: Number.isFinite(quantity) && quantity > 0 ? Math.floor(quantity) : 1,
+    weightValue: Number.isFinite(weightValue) ? weightValue : null,
+    weightUnit: typeof weightUnit === 'string' && weightUnit ? weightUnit : null,
+    expiryDate,
+    purchaseDate: purchaseDate ?? null,
+    price: Number.isFinite(price) ? price : null
+  };
+
+  await pool.query(
+    `INSERT INTO inventory_items (id, list_id, name, quantity, weight_value, weight_unit, expiry_date, purchase_date, price)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+    [
+      item.id,
+      list.id,
+      item.name,
+      item.quantity,
+      item.weightValue,
+      item.weightUnit,
+      item.expiryDate,
+      item.purchaseDate,
+      item.price
+    ]
+  );
+
+  await broadcastInventory(list.share_code, list.id);
+  res.status(201).json(item);
+});
+
+const INVENTORY_FIELD_COLUMNS = {
+  name: 'name',
+  quantity: 'quantity',
+  weightValue: 'weight_value',
+  weightUnit: 'weight_unit',
+  expiryDate: 'expiry_date',
+  purchaseDate: 'purchase_date',
+  price: 'price'
+};
+
+app.patch('/api/lists/:code/inventory/:itemId', async (req, res) => {
+  const list = await getListByCode(req.params.code.toUpperCase());
+  if (!list) return res.status(404).json({ error: 'List not found' });
+
+  const sets = [];
+  const values = [];
+  let i = 1;
+
+  for (const [key, column] of Object.entries(INVENTORY_FIELD_COLUMNS)) {
+    if (!(key in req.body)) continue;
+    let value = req.body[key];
+
+    if (key === 'name') {
+      if (typeof value !== 'string' || !value.trim()) {
+        return res.status(400).json({ error: 'name must be a non-empty string' });
+      }
+      value = value.trim();
+    }
+    if (key === 'quantity') {
+      if (!Number.isFinite(value) || value <= 0) {
+        return res.status(400).json({ error: 'quantity must be a positive number' });
+      }
+      value = Math.floor(value);
+    }
+    if (key === 'expiryDate' && !isValidDate(value)) {
+      return res.status(400).json({ error: 'expiryDate must be YYYY-MM-DD' });
+    }
+    if (key === 'purchaseDate' && value != null && !isValidDate(value)) {
+      return res.status(400).json({ error: 'purchaseDate must be YYYY-MM-DD' });
+    }
+
+    sets.push(`${column} = $${i}`);
+    values.push(value);
+    i++;
+  }
+
+  if (sets.length === 0) return res.status(400).json({ error: 'No valid fields to update' });
+
+  values.push(req.params.itemId, list.id);
+  const { rowCount } = await pool.query(
+    `UPDATE inventory_items SET ${sets.join(', ')} WHERE id = $${i} AND list_id = $${i + 1}`,
+    values
+  );
+  if (rowCount === 0) return res.status(404).json({ error: 'Item not found' });
+
+  await broadcastInventory(list.share_code, list.id);
+  res.status(204).end();
+});
+
+app.delete('/api/lists/:code/inventory/:itemId', async (req, res) => {
+  const list = await getListByCode(req.params.code.toUpperCase());
+  if (!list) return res.status(404).json({ error: 'List not found' });
+
+  await pool.query('DELETE FROM inventory_items WHERE id = $1 AND list_id = $2', [
+    req.params.itemId,
+    list.id
+  ]);
+  await broadcastInventory(list.share_code, list.id);
+  res.status(204).end();
+});
+
 io.on('connection', (socket) => {
   socket.on('join', async (code) => {
     if (typeof code !== 'string') return;
@@ -123,6 +271,7 @@ io.on('connection', (socket) => {
     if (!list) return;
     socket.join(list.share_code);
     socket.emit('items', await getItems(list.id));
+    socket.emit('inventory', await getInventoryItems(list.id));
   });
 });
 

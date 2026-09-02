@@ -1,21 +1,8 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Grocery List</ion-title>
-    <ion-buttons slot="start">
-      <ion-button (click)="leaveList()">
-        <ion-icon slot="icon-only" name="exit-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-buttons slot="end">
-      <ion-button (click)="showShareCode()">
-        <ion-icon slot="icon-only" name="share-social-outline"></ion-icon>
-      </ion-button>
-      <ion-button (click)="clearChecked()" [disabled]="checkedCount() === 0">
-        <ion-icon slot="icon-only" name="trash-bin-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<app-list-header title="Shopping List">
+  <ion-button end-extra (click)="clearChecked()" [disabled]="checkedCount() === 0">
+    <ion-icon slot="icon-only" name="trash-bin-outline"></ion-icon>
+  </ion-button>
+</app-list-header>
 
 <ion-content>
   @if (groupedItems().length === 0) {

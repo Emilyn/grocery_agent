@@ -10,10 +10,11 @@ import {
   IonText,
   IonSpinner
 } from '@ionic/angular';
-import { GroceryListService } from '../../services/grocery-list.service';
+import { ListSessionService } from '../../services/list-session.service';
 
 @Component({
   selector: 'app-join-list',
+  host: { class: 'ion-page' },
   imports: [
     FormsModule,
     IonHeader,
@@ -29,15 +30,15 @@ import { GroceryListService } from '../../services/grocery-list.service';
   styleUrl: './join-list.page.scss'
 })
 export class JoinListPage {
-  readonly groceryList = inject(GroceryListService);
+  readonly session = inject(ListSessionService);
 
   joinCode = '';
 
   createList(): void {
-    void this.groceryList.createList();
+    void this.session.createList();
   }
 
   joinList(): void {
-    void this.groceryList.joinList(this.joinCode);
+    void this.session.joinList(this.joinCode);
   }
 }

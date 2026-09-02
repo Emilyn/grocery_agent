@@ -1,0 +1,48 @@
+<app-list-header title="Inventory" />
+
+<ion-content>
+  @if (items().length === 0) {
+    <div class="empty-state">
+      <p>No inventory yet. Tap + to add what's in your pantry.</p>
+    </div>
+  }
+
+  <ion-list>
+    @for (item of items(); track item.id) {
+      <ion-item-sliding>
+        <ion-item>
+          <ion-label>
+            <h2>
+              {{ item.name }}
+              <ion-note>x{{ item.quantity }}</ion-note>
+            </h2>
+            <p>
+              @if (item.weightValue) {
+                {{ item.weightValue }}{{ item.weightUnit }} ·
+              }
+              Expires {{ item.expiryDate }}
+              @if (item.purchaseDate) {
+                · bought {{ item.purchaseDate }}
+              }
+              @if (item.price != null) {
+                · {{ item.price | currency }}
+              }
+            </p>
+          </ion-label>
+          <ion-badge slot="end" [color]="expiryColor(item)">{{ expiryLabel(item) }}</ion-badge>
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="removeItem(item.id)">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    }
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openAddModal()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

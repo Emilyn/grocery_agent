@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="leaveList()">
+        <ion-icon slot="icon-only" name="exit-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showShareCode()">
+        <ion-icon slot="icon-only" name="share-social-outline"></ion-icon>
+      </ion-button>
+      <ng-content select="[end-extra]"></ng-content>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment [value]="session.activeTab()" (ionChange)="setTab($any($event.detail.value))">
+      <ion-segment-button value="shopping">
+        <ion-label>Shopping List</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="inventory">
+        <ion-label>Inventory</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>

@@ -3,7 +3,12 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const { Pool } = pg;
+const { Pool, types } = pg;
+
+// Return DATE columns as plain 'YYYY-MM-DD' strings instead of JS Date
+// objects, which node-postgres would otherwise convert using local
+// server time and shift by a day near midnight.
+types.setTypeParser(types.builtins.DATE, (value) => value);
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

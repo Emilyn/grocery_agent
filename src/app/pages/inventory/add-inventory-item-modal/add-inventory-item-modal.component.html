@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Add Inventory Item</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()" [strong]="true" [disabled]="!canSave">Save</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-input label="Item name" label-placement="floating" [(ngModel)]="name"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input
+      label="Quantity"
+      label-placement="floating"
+      type="number"
+      min="1"
+      [(ngModel)]="quantity"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input
+      label="Weight"
+      label-placement="floating"
+      type="number"
+      min="0"
+      [(ngModel)]="weightValue"
+    ></ion-input>
+    <ion-select slot="end" [(ngModel)]="weightUnit" interface="popover">
+      @for (unit of weightUnits; track unit) {
+        <ion-select-option [value]="unit">{{ unit }}</ion-select-option>
+      }
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-input
+      label="Expiry date"
+      label-placement="floating"
+      type="date"
+      [(ngModel)]="expiryDate"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input
+      label="Purchase date (optional)"
+      label-placement="floating"
+      type="date"
+      [(ngModel)]="purchaseDate"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input
+      label="Price paid (optional)"
+      label-placement="floating"
+      type="number"
+      min="0"
+      step="0.01"
+      [(ngModel)]="price"
+    ></ion-input>
+  </ion-item>
+</ion-content>

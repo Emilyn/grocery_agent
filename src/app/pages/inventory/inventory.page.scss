@@ -1,0 +1,16 @@
+.empty-state {
+  text-align: center;
+  color: var(--ion-color-medium);
+  padding: 3rem 1.5rem;
+}
+
+ion-item ion-label h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+ion-item ion-label p {
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+}
