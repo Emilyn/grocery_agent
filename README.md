@@ -54,7 +54,7 @@ The app talks to a small API for shared, synced grocery lists:
 - `POST /api/lists` — create a list, returns a share code (e.g. `VRB8LD`)
 - `GET /api/lists/:code` — fetch a list and its shopping-list items
 - `POST /api/lists/:code/items` — add an item
-- `PATCH /api/lists/:code/items/:id` — update an item (e.g. toggle checked)
+- `PATCH /api/lists/:code/items/:id` — update any subset of `name`, `quantity`, `category`, `checked`
 - `DELETE /api/lists/:code/items/:id` — remove an item
 - `POST /api/lists/:code/clear-checked` — remove all checked items
 
