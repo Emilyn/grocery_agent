@@ -13,7 +13,8 @@ import {
   fileTrayStackedOutline,
   snowOutline,
   homeOutline,
-  ellipsisHorizontalOutline
+  ellipsisHorizontalOutline,
+  cubeOutline
 } from 'ionicons/icons';
 import {
   IonContent,
@@ -38,9 +39,11 @@ import {
 } from '@ionic/angular';
 import { ListHeaderComponent } from '../../components/list-header/list-header.component';
 import { GroceryListService } from '../../services/grocery-list.service';
+import { InventoryService } from '../../services/inventory.service';
 import { GROCERY_CATEGORIES, GroceryItem } from '../../models/grocery-item.model';
 import { categoryIcon } from '../../utils/category-icons';
 import { EditItemModalComponent } from './edit-item-modal/edit-item-modal.component';
+import { AddInventoryItemModalComponent } from '../inventory/add-inventory-item-modal/add-inventory-item-modal.component';
 
 @Component({
   selector: 'app-grocery-list',
@@ -72,6 +75,7 @@ import { EditItemModalComponent } from './edit-item-modal/edit-item-modal.compon
 })
 export class GroceryListPage {
   private readonly groceryList = inject(GroceryListService);
+  private readonly inventory = inject(InventoryService);
   private readonly modalController = inject(ModalController);
 
   readonly categories = GROCERY_CATEGORIES;
@@ -106,7 +110,8 @@ export class GroceryListPage {
       fileTrayStackedOutline,
       snowOutline,
       homeOutline,
-      ellipsisHorizontalOutline
+      ellipsisHorizontalOutline,
+      cubeOutline
     });
   }
 
@@ -139,6 +144,18 @@ export class GroceryListPage {
     const { data, role } = await modal.onDidDismiss();
     if (role === 'confirm' && data) {
       await this.groceryList.updateItem(item.id, data);
+    }
+  }
+
+  async addToInventory(item: GroceryItem): Promise<void> {
+    const modal = await this.modalController.create({
+      component: AddInventoryItemModalComponent,
+      componentProps: { prefill: { name: item.name, quantity: item.quantity } }
+    });
+    await modal.present();
+    const { data, role } = await modal.onDidDismiss();
+    if (role === 'confirm' && data) {
+      await this.inventory.addItem(data);
     }
   }
 }

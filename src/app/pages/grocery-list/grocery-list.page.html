@@ -33,6 +33,11 @@
               <ion-badge slot="end" color="medium">x{{ item.quantity }}</ion-badge>
             </ion-item>
             <ion-item-options side="end">
+              @if (item.checked) {
+                <ion-item-option color="tertiary" (click)="addToInventory(item)">
+                  <ion-icon slot="icon-only" name="cube-outline"></ion-icon>
+                </ion-item-option>
+              }
               <ion-item-option color="danger" (click)="removeItem(item.id)">
                 <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
               </ion-item-option>

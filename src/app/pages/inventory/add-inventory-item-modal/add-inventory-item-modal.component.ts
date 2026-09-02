@@ -47,6 +47,7 @@ import { InventoryItem, NewInventoryItem, WEIGHT_UNITS } from '../../../models/i
 })
 export class AddInventoryItemModalComponent implements OnInit {
   @Input() editingItem: InventoryItem | null = null;
+  @Input() prefill: { name: string; quantity: number } | null = null;
 
   private readonly modalController = inject(ModalController);
 
@@ -65,14 +66,20 @@ export class AddInventoryItemModalComponent implements OnInit {
   price: number | null = null;
 
   ngOnInit(): void {
-    if (!this.editingItem) return;
-    this.name = this.editingItem.name;
-    this.quantity = this.editingItem.quantity;
-    this.weightValue = this.editingItem.weightValue;
-    this.weightUnit = this.editingItem.weightUnit ?? WEIGHT_UNITS[0];
-    this.expiryDate = this.editingItem.expiryDate;
-    this.purchaseDate = this.editingItem.purchaseDate ?? '';
-    this.price = this.editingItem.price;
+    if (this.editingItem) {
+      this.name = this.editingItem.name;
+      this.quantity = this.editingItem.quantity;
+      this.weightValue = this.editingItem.weightValue;
+      this.weightUnit = this.editingItem.weightUnit ?? WEIGHT_UNITS[0];
+      this.expiryDate = this.editingItem.expiryDate;
+      this.purchaseDate = this.editingItem.purchaseDate ?? '';
+      this.price = this.editingItem.price;
+      return;
+    }
+    if (this.prefill) {
+      this.name = this.prefill.name;
+      this.quantity = this.prefill.quantity;
+    }
   }
 
   get canSave(): boolean {
