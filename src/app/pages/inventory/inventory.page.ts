@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, NgTemplateOutlet } from '@angular/common';
 import { addIcons } from 'ionicons';
 import {
   add,
@@ -8,7 +8,10 @@ import {
   cubeOutline,
   scaleOutline,
   calendarOutline,
-  cashOutline
+  cashOutline,
+  ellipseOutline,
+  timeOutline,
+  checkmarkCircle
 } from 'ionicons/icons';
 import {
   IonContent,
@@ -16,7 +19,6 @@ import {
   IonItem,
   IonItemDivider,
   IonLabel,
-  IonCheckbox,
   IonItemSliding,
   IonItemOptions,
   IonItemOption,
@@ -30,22 +32,40 @@ import {
 } from '@ionic/angular';
 import { ListHeaderComponent } from '../../components/list-header/list-header.component';
 import { InventoryService } from '../../services/inventory.service';
-import { InventoryItem } from '../../models/inventory-item.model';
+import { InventoryItem, InventoryStatus } from '../../models/inventory-item.model';
 import { daysUntil } from '../../utils/date';
 import { AddInventoryItemModalComponent } from './add-inventory-item-modal/add-inventory-item-modal.component';
+
+const NEXT_STATUS: Record<InventoryStatus, InventoryStatus> = {
+  unused: 'opened',
+  opened: 'used',
+  used: 'unused'
+};
+
+const STATUS_ICON: Record<InventoryStatus, string> = {
+  unused: 'ellipse-outline',
+  opened: 'time-outline',
+  used: 'checkmark-circle'
+};
+
+const STATUS_COLOR: Record<InventoryStatus, string> = {
+  unused: 'medium',
+  opened: 'warning',
+  used: 'success'
+};
 
 @Component({
   selector: 'app-inventory',
   host: { class: 'ion-page' },
   imports: [
     CurrencyPipe,
+    NgTemplateOutlet,
     ListHeaderComponent,
     IonContent,
     IonList,
     IonItem,
     IonItemDivider,
     IonLabel,
-    IonCheckbox,
     IonItemSliding,
     IonItemOptions,
     IonItemOption,
@@ -63,11 +83,29 @@ export class InventoryPage {
   private readonly inventory = inject(InventoryService);
   private readonly modalController = inject(ModalController);
 
-  readonly unusedItems = computed(() => this.inventory.items().filter((item) => !item.used));
-  readonly usedItems = computed(() => this.inventory.items().filter((item) => item.used));
+  readonly unusedItems = computed(() =>
+    this.inventory.items().filter((item) => item.status === 'unused')
+  );
+  readonly openedItems = computed(() =>
+    this.inventory.items().filter((item) => item.status === 'opened')
+  );
+  readonly usedItems = computed(() =>
+    this.inventory.items().filter((item) => item.status === 'used')
+  );
 
   constructor() {
-    addIcons({ add, trashOutline, trashBinOutline, cubeOutline, scaleOutline, calendarOutline, cashOutline });
+    addIcons({
+      add,
+      trashOutline,
+      trashBinOutline,
+      cubeOutline,
+      scaleOutline,
+      calendarOutline,
+      cashOutline,
+      ellipseOutline,
+      timeOutline,
+      checkmarkCircle
+    });
   }
 
   expiryLabel(item: InventoryItem): string {
@@ -84,8 +122,16 @@ export class InventoryPage {
     return 'success';
   }
 
-  toggleUsed(item: InventoryItem): void {
-    void this.inventory.setUsed(item.id, !item.used);
+  statusIcon(item: InventoryItem): string {
+    return STATUS_ICON[item.status];
+  }
+
+  statusColor(item: InventoryItem): string {
+    return STATUS_COLOR[item.status];
+  }
+
+  advanceStatus(item: InventoryItem): void {
+    void this.inventory.setStatus(item.id, NEXT_STATUS[item.status]);
   }
 
   removeItem(id: string): void {

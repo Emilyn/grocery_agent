@@ -32,6 +32,8 @@ async function broadcastItems(code, listId) {
   io.to(code).emit('items', items);
 }
 
+const INVENTORY_STATUSES = ['unused', 'opened', 'used'];
+
 function toInventoryDto(row) {
   return {
     id: row.id,
@@ -42,14 +44,18 @@ function toInventoryDto(row) {
     expiryDate: row.expiry_date,
     purchaseDate: row.purchase_date,
     price: row.price,
-    used: row.used
+    status: row.status
   };
 }
 
 async function getInventoryItems(listId) {
   const { rows } = await pool.query(
-    `SELECT id, name, quantity, weight_value, weight_unit, expiry_date, purchase_date, price, used
-     FROM inventory_items WHERE list_id = $1 ORDER BY used ASC, expiry_date ASC, created_at ASC`,
+    `SELECT id, name, quantity, weight_value, weight_unit, expiry_date, purchase_date, price, status
+     FROM inventory_items WHERE list_id = $1
+     ORDER BY
+       CASE status WHEN 'unused' THEN 0 WHEN 'opened' THEN 1 ELSE 2 END,
+       expiry_date ASC,
+       created_at ASC`,
     [listId]
   );
   return rows.map(toInventoryDto);
@@ -172,7 +178,7 @@ app.post('/api/lists/:code/inventory', async (req, res) => {
     expiryDate,
     purchaseDate: purchaseDate ?? null,
     price: Number.isFinite(price) ? price : null,
-    used: false
+    status: 'unused'
   };
 
   await pool.query(
@@ -203,7 +209,7 @@ const INVENTORY_FIELD_COLUMNS = {
   expiryDate: 'expiry_date',
   purchaseDate: 'purchase_date',
   price: 'price',
-  used: 'used'
+  status: 'status'
 };
 
 app.patch('/api/lists/:code/inventory/:itemId', async (req, res) => {
@@ -236,8 +242,8 @@ app.patch('/api/lists/:code/inventory/:itemId', async (req, res) => {
     if (key === 'purchaseDate' && value != null && !isValidDate(value)) {
       return res.status(400).json({ error: 'purchaseDate must be YYYY-MM-DD' });
     }
-    if (key === 'used' && typeof value !== 'boolean') {
-      return res.status(400).json({ error: 'used must be a boolean' });
+    if (key === 'status' && !INVENTORY_STATUSES.includes(value)) {
+      return res.status(400).json({ error: `status must be one of ${INVENTORY_STATUSES.join(', ')}` });
     }
 
     sets.push(`${column} = $${i}`);
@@ -262,7 +268,7 @@ app.post('/api/lists/:code/inventory/clear-used', async (req, res) => {
   const list = await getListByCode(req.params.code.toUpperCase());
   if (!list) return res.status(404).json({ error: 'List not found' });
 
-  await pool.query('DELETE FROM inventory_items WHERE list_id = $1 AND used = true', [list.id]);
+  await pool.query("DELETE FROM inventory_items WHERE list_id = $1 AND status = 'used'", [list.id]);
   await broadcastInventory(list.share_code, list.id);
   res.status(204).end();
 });

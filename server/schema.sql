@@ -26,12 +26,25 @@ CREATE TABLE IF NOT EXISTS inventory_items (
   expiry_date DATE NOT NULL,
   purchase_date DATE,
   price DOUBLE PRECISION,
-  used BOOLEAN NOT NULL DEFAULT false,
+  status TEXT NOT NULL DEFAULT 'unused',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- Added after the initial release; keeps existing databases in sync since
 -- CREATE TABLE IF NOT EXISTS above is a no-op once the table already exists.
-ALTER TABLE inventory_items ADD COLUMN IF NOT EXISTS used BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE inventory_items ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'unused';
+
+-- `used` boolean replaced by the three-state `status` column
+-- (unused / opened / used); migrate any existing data over, then drop it.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'inventory_items' AND column_name = 'used'
+  ) THEN
+    UPDATE inventory_items SET status = 'used' WHERE used = true;
+    ALTER TABLE inventory_items DROP COLUMN used;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS inventory_items_list_id_idx ON inventory_items (list_id);

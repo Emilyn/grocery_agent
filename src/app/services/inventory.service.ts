@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { API_BASE_URL } from '../core/app-config';
-import { InventoryItem, NewInventoryItem } from '../models/inventory-item.model';
+import { InventoryItem, InventoryStatus, NewInventoryItem } from '../models/inventory-item.model';
 import { ListSessionService } from './list-session.service';
 
 @Injectable({ providedIn: 'root' })
@@ -33,8 +33,8 @@ export class InventoryService {
     });
   }
 
-  async setUsed(id: string, used: boolean): Promise<void> {
-    await this.updateItem(id, { used });
+  async setStatus(id: string, status: InventoryStatus): Promise<void> {
+    await this.updateItem(id, { status });
   }
 
   async removeItem(id: string): Promise<void> {

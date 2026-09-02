@@ -1,3 +1,7 @@
+export type InventoryStatus = 'unused' | 'opened' | 'used';
+
+export const INVENTORY_STATUSES: InventoryStatus[] = ['unused', 'opened', 'used'];
+
 export interface InventoryItem {
   id: string;
   name: string;
@@ -7,7 +11,7 @@ export interface InventoryItem {
   expiryDate: string; // YYYY-MM-DD
   purchaseDate: string | null; // YYYY-MM-DD
   price: number | null;
-  used: boolean;
+  status: InventoryStatus;
 }
 
 export const WEIGHT_UNITS = ['g', 'kg', 'lb', 'oz'] as const;
