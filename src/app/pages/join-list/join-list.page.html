@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Grocery Agent</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="join-list">
+    <p>Start a new shared grocery list, or join one with a code someone shared with you.</p>
+
+    <ion-button expand="block" (click)="createList()" [disabled]="groceryList.loading()">
+      @if (groceryList.loading()) {
+        <ion-spinner name="dots"></ion-spinner>
+      } @else {
+        Create a new list
+      }
+    </ion-button>
+
+    <div class="divider">or</div>
+
+    <ion-input
+      label="List code"
+      label-placement="floating"
+      fill="outline"
+      placeholder="e.g. VRB8LD"
+      [(ngModel)]="joinCode"
+      (keyup.enter)="joinList()"
+    ></ion-input>
+
+    <ion-button
+      expand="block"
+      fill="outline"
+      (click)="joinList()"
+      [disabled]="groceryList.loading() || !joinCode.trim()"
+    >
+      Join list
+    </ion-button>
+
+    @if (groceryList.error(); as error) {
+      <ion-text color="danger">
+        <p>{{ error }}</p>
+      </ion-text>
+    }
+  </div>
+</ion-content>

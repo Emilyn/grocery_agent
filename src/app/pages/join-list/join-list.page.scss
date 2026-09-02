@@ -1,0 +1,18 @@
+.join-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 360px;
+  margin: 2rem auto 0;
+
+  p {
+    color: var(--ion-color-medium);
+    text-align: center;
+  }
+
+  .divider {
+    text-align: center;
+    color: var(--ion-color-medium);
+    font-size: 0.85rem;
+  }
+}
