@@ -1,14 +1,17 @@
 # Grocery Agent
 
-A mobile grocery list app built with [Ionic](https://ionicframework.com/), Angular, and [Capacitor](https://capacitorjs.com/) — runs as a web app and packages to native iOS/Android.
+A mobile grocery list app built with [Ionic](https://ionicframework.com/), Angular, and [Capacitor](https://capacitorjs.com/) — runs as a web app and packages to native iOS/Android. Lists are shared: create a list, share its code with others, and everyone sees changes live.
 
 ## Stack
 
 - Angular 20 (standalone components)
 - Ionic Angular 9 (standalone components, `@ionic/angular`)
-- Capacitor 8 for native shell + `@capacitor/preferences` for local storage
+- Capacitor 8 for native shell + `@capacitor/preferences` to remember which list you're in
+- `server/` — Node/Express + Postgres + Socket.IO API (see `server/README` section below), deployable to [Railway](https://railway.app/)
 
 ## Development server
+
+Start the API first (see [Running the server locally](#running-the-server-locally)), then:
 
 ```bash
 npm start
@@ -42,3 +45,36 @@ npx cap sync
 ```
 
 Then open the native project with `npx cap open android` / `npx cap open ios` to build and run on a device or simulator.
+
+## Backend (`server/`)
+
+The app talks to a small API for shared, synced grocery lists:
+
+- `POST /api/lists` — create a list, returns a share code (e.g. `VRB8LD`)
+- `GET /api/lists/:code` — fetch a list and its items
+- `POST /api/lists/:code/items` — add an item
+- `PATCH /api/lists/:code/items/:id` — update an item (e.g. toggle checked)
+- `DELETE /api/lists/:code/items/:id` — remove an item
+- `POST /api/lists/:code/clear-checked` — remove all checked items
+- A Socket.IO connection joins a room per list code and broadcasts the full item list on every change, so everyone viewing that list updates live.
+
+### Running the server locally
+
+Requires a Postgres database.
+
+```bash
+cd server
+npm install
+cp .env.example .env   # edit DATABASE_URL to point at your Postgres instance
+npm start
+```
+
+The server creates its tables automatically on startup (see `server/schema.sql`).
+
+### Deploying to Railway
+
+1. Create a new Railway project, add a **Postgres** plugin to it.
+2. Add a service from this repo, with **root directory set to `server/`**.
+3. Set the service's `DATABASE_URL` env var to the Postgres plugin's connection string (Railway can reference it directly, e.g. `${{Postgres.DATABASE_URL}}`).
+4. Deploy — Railway detects `server/package.json` and runs `npm start`. It injects `PORT` automatically.
+5. Copy the service's public URL and set it as `API_BASE_URL` in `src/app/core/app-config.ts`, then rebuild the app (`npm run build`) so it points at your deployed API instead of `localhost`.
