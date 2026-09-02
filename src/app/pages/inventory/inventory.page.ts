@@ -1,20 +1,23 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { addIcons } from 'ionicons';
-import { addOutline, trashOutline } from 'ionicons/icons';
+import { addOutline, trashOutline, trashBinOutline } from 'ionicons/icons';
 import {
   IonContent,
   IonList,
   IonItem,
   IonLabel,
   IonNote,
+  IonCheckbox,
   IonItemSliding,
   IonItemOptions,
   IonItemOption,
   IonIcon,
+  IonButton,
   IonBadge,
   IonFab,
   IonFabButton,
+  IonItemGroup,
   ModalController
 } from '@ionic/angular';
 import { ListHeaderComponent } from '../../components/list-header/list-header.component';
@@ -34,13 +37,16 @@ import { AddInventoryItemModalComponent } from './add-inventory-item-modal/add-i
     IonItem,
     IonLabel,
     IonNote,
+    IonCheckbox,
     IonItemSliding,
     IonItemOptions,
     IonItemOption,
     IonIcon,
+    IonButton,
     IonBadge,
     IonFab,
-    IonFabButton
+    IonFabButton,
+    IonItemGroup
   ],
   templateUrl: './inventory.page.html',
   styleUrl: './inventory.page.scss'
@@ -49,10 +55,11 @@ export class InventoryPage {
   private readonly inventory = inject(InventoryService);
   private readonly modalController = inject(ModalController);
 
-  readonly items = this.inventory.items;
+  readonly unusedItems = computed(() => this.inventory.items().filter((item) => !item.used));
+  readonly usedItems = computed(() => this.inventory.items().filter((item) => item.used));
 
   constructor() {
-    addIcons({ addOutline, trashOutline });
+    addIcons({ addOutline, trashOutline, trashBinOutline });
   }
 
   expiryLabel(item: InventoryItem): string {
@@ -69,8 +76,16 @@ export class InventoryPage {
     return 'success';
   }
 
+  toggleUsed(item: InventoryItem): void {
+    void this.inventory.setUsed(item.id, !item.used);
+  }
+
   removeItem(id: string): void {
     void this.inventory.removeItem(id);
+  }
+
+  clearUsed(): void {
+    void this.inventory.clearUsed();
   }
 
   async openAddModal(): Promise<void> {

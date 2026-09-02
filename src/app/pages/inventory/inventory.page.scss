@@ -14,3 +14,15 @@ ion-item ion-label p {
   font-size: 0.8rem;
   color: var(--ion-color-medium);
 }
+
+.section-header {
+  --min-height: 32px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+ion-label.used h2 {
+  text-decoration: line-through;
+  opacity: 0.5;
+}

@@ -1,44 +1,96 @@
-<app-list-header title="Inventory" />
+<app-list-header title="Inventory">
+  <ion-button end-extra (click)="clearUsed()" [disabled]="usedItems().length === 0">
+    <ion-icon slot="icon-only" name="trash-bin-outline"></ion-icon>
+  </ion-button>
+</app-list-header>
 
 <ion-content>
-  @if (items().length === 0) {
+  @if (unusedItems().length === 0 && usedItems().length === 0) {
     <div class="empty-state">
       <p>No inventory yet. Tap + to add what's in your pantry.</p>
     </div>
   }
 
-  <ion-list>
-    @for (item of items(); track item.id) {
-      <ion-item-sliding>
-        <ion-item>
-          <ion-label>
-            <h2>
-              {{ item.name }}
-              <ion-note>x{{ item.quantity }}</ion-note>
-            </h2>
-            <p>
-              @if (item.weightValue) {
-                {{ item.weightValue }}{{ item.weightUnit }} ·
-              }
-              Expires {{ item.expiryDate }}
-              @if (item.purchaseDate) {
-                · bought {{ item.purchaseDate }}
-              }
-              @if (item.price != null) {
-                · {{ item.price | currency }}
-              }
-            </p>
-          </ion-label>
-          <ion-badge slot="end" [color]="expiryColor(item)">{{ expiryLabel(item) }}</ion-badge>
+  @if (unusedItems().length > 0) {
+    <ion-list>
+      <ion-item-group>
+        <ion-item lines="none" class="section-header">
+          <ion-label color="medium">Unused</ion-label>
         </ion-item>
-        <ion-item-options side="end">
-          <ion-item-option color="danger" (click)="removeItem(item.id)">
-            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
-    }
-  </ion-list>
+        @for (item of unusedItems(); track item.id) {
+          <ion-item-sliding>
+            <ion-item>
+              <ion-checkbox slot="start" [checked]="item.used" (ionChange)="toggleUsed(item)"></ion-checkbox>
+              <ion-label>
+                <h2>
+                  {{ item.name }}
+                  <ion-note>x{{ item.quantity }}</ion-note>
+                </h2>
+                <p>
+                  @if (item.weightValue) {
+                    {{ item.weightValue }}{{ item.weightUnit }} ·
+                  }
+                  Expires {{ item.expiryDate }}
+                  @if (item.purchaseDate) {
+                    · bought {{ item.purchaseDate }}
+                  }
+                  @if (item.price != null) {
+                    · {{ item.price | currency }}
+                  }
+                </p>
+              </ion-label>
+              <ion-badge slot="end" [color]="expiryColor(item)">{{ expiryLabel(item) }}</ion-badge>
+            </ion-item>
+            <ion-item-options side="end">
+              <ion-item-option color="danger" (click)="removeItem(item.id)">
+                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        }
+      </ion-item-group>
+    </ion-list>
+  }
+
+  @if (usedItems().length > 0) {
+    <ion-list>
+      <ion-item-group>
+        <ion-item lines="none" class="section-header">
+          <ion-label color="medium">Used</ion-label>
+        </ion-item>
+        @for (item of usedItems(); track item.id) {
+          <ion-item-sliding>
+            <ion-item>
+              <ion-checkbox slot="start" [checked]="item.used" (ionChange)="toggleUsed(item)"></ion-checkbox>
+              <ion-label class="used">
+                <h2>
+                  {{ item.name }}
+                  <ion-note>x{{ item.quantity }}</ion-note>
+                </h2>
+                <p>
+                  @if (item.weightValue) {
+                    {{ item.weightValue }}{{ item.weightUnit }} ·
+                  }
+                  Expires {{ item.expiryDate }}
+                  @if (item.purchaseDate) {
+                    · bought {{ item.purchaseDate }}
+                  }
+                  @if (item.price != null) {
+                    · {{ item.price | currency }}
+                  }
+                </p>
+              </ion-label>
+            </ion-item>
+            <ion-item-options side="end">
+              <ion-item-option color="danger" (click)="removeItem(item.id)">
+                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        }
+      </ion-item-group>
+    </ion-list>
+  }
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="openAddModal()">

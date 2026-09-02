@@ -7,6 +7,7 @@ export interface InventoryItem {
   expiryDate: string; // YYYY-MM-DD
   purchaseDate: string | null; // YYYY-MM-DD
   price: number | null;
+  used: boolean;
 }
 
 export const WEIGHT_UNITS = ['g', 'kg', 'lb', 'oz'] as const;

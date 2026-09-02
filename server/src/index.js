@@ -41,14 +41,15 @@ function toInventoryDto(row) {
     weightUnit: row.weight_unit,
     expiryDate: row.expiry_date,
     purchaseDate: row.purchase_date,
-    price: row.price
+    price: row.price,
+    used: row.used
   };
 }
 
 async function getInventoryItems(listId) {
   const { rows } = await pool.query(
-    `SELECT id, name, quantity, weight_value, weight_unit, expiry_date, purchase_date, price
-     FROM inventory_items WHERE list_id = $1 ORDER BY expiry_date ASC, created_at ASC`,
+    `SELECT id, name, quantity, weight_value, weight_unit, expiry_date, purchase_date, price, used
+     FROM inventory_items WHERE list_id = $1 ORDER BY used ASC, expiry_date ASC, created_at ASC`,
     [listId]
   );
   return rows.map(toInventoryDto);
@@ -170,7 +171,8 @@ app.post('/api/lists/:code/inventory', async (req, res) => {
     weightUnit: typeof weightUnit === 'string' && weightUnit ? weightUnit : null,
     expiryDate,
     purchaseDate: purchaseDate ?? null,
-    price: Number.isFinite(price) ? price : null
+    price: Number.isFinite(price) ? price : null,
+    used: false
   };
 
   await pool.query(
@@ -200,7 +202,8 @@ const INVENTORY_FIELD_COLUMNS = {
   weightUnit: 'weight_unit',
   expiryDate: 'expiry_date',
   purchaseDate: 'purchase_date',
-  price: 'price'
+  price: 'price',
+  used: 'used'
 };
 
 app.patch('/api/lists/:code/inventory/:itemId', async (req, res) => {
@@ -233,6 +236,9 @@ app.patch('/api/lists/:code/inventory/:itemId', async (req, res) => {
     if (key === 'purchaseDate' && value != null && !isValidDate(value)) {
       return res.status(400).json({ error: 'purchaseDate must be YYYY-MM-DD' });
     }
+    if (key === 'used' && typeof value !== 'boolean') {
+      return res.status(400).json({ error: 'used must be a boolean' });
+    }
 
     sets.push(`${column} = $${i}`);
     values.push(value);
@@ -248,6 +254,15 @@ app.patch('/api/lists/:code/inventory/:itemId', async (req, res) => {
   );
   if (rowCount === 0) return res.status(404).json({ error: 'Item not found' });
 
+  await broadcastInventory(list.share_code, list.id);
+  res.status(204).end();
+});
+
+app.post('/api/lists/:code/inventory/clear-used', async (req, res) => {
+  const list = await getListByCode(req.params.code.toUpperCase());
+  if (!list) return res.status(404).json({ error: 'List not found' });
+
+  await pool.query('DELETE FROM inventory_items WHERE list_id = $1 AND used = true', [list.id]);
   await broadcastInventory(list.share_code, list.id);
   res.status(204).end();
 });

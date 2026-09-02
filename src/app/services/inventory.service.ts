@@ -23,7 +23,7 @@ export class InventoryService {
     });
   }
 
-  async updateItem(id: string, patch: Partial<NewInventoryItem>): Promise<void> {
+  async updateItem(id: string, patch: Partial<Omit<InventoryItem, 'id'>>): Promise<void> {
     const code = this.session.listCode();
     if (!code) return;
     await fetch(`${API_BASE_URL}/api/lists/${code}/inventory/${id}`, {
@@ -33,9 +33,19 @@ export class InventoryService {
     });
   }
 
+  async setUsed(id: string, used: boolean): Promise<void> {
+    await this.updateItem(id, { used });
+  }
+
   async removeItem(id: string): Promise<void> {
     const code = this.session.listCode();
     if (!code) return;
     await fetch(`${API_BASE_URL}/api/lists/${code}/inventory/${id}`, { method: 'DELETE' });
+  }
+
+  async clearUsed(): Promise<void> {
+    const code = this.session.listCode();
+    if (!code) return;
+    await fetch(`${API_BASE_URL}/api/lists/${code}/inventory/clear-used`, { method: 'POST' });
   }
 }
