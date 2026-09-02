@@ -63,6 +63,7 @@ The app talks to a small API for shared, synced grocery lists:
 - `PATCH /api/lists/:code/inventory/:id` — update any subset of those fields, or `status`
 - `DELETE /api/lists/:code/inventory/:id` — remove an item
 - `POST /api/lists/:code/inventory/clear-used` — remove all items with `status: 'used'`
+- `POST /api/lists/:code/inventory/:id/finish` — remove the item from inventory and add a matching entry (same name/quantity, category `Other`) to the shopping list, so running out queues a repurchase
 
 A Socket.IO connection joins a room per list code; the server broadcasts the full `items` list and the full `inventory` list on every change to either, so everyone viewing that list updates live.
 
