@@ -1,6 +1,6 @@
 # Grocery Agent
 
-A mobile grocery list app built with [Ionic](https://ionicframework.com/), Angular, and [Capacitor](https://capacitorjs.com/) — runs as a web app and packages to native iOS/Android. Lists are shared: create a list, share its code with others, and everyone sees changes live.
+A mobile grocery app built with [Ionic](https://ionicframework.com/), Angular, and [Capacitor](https://capacitorjs.com/) — runs as a web app and packages to native iOS/Android. Lists are shared: create a list, share its code with others, and everyone sees changes live. Each list has two tabs: a **Shopping List** (what to buy) and an **Inventory** (what you already have, with quantity, weight, and expiry date, so you can see what's about to go bad).
 
 ## Stack
 
@@ -50,13 +50,20 @@ Then open the native project with `npx cap open android` / `npx cap open ios` to
 
 The app talks to a small API for shared, synced grocery lists:
 
+**Shopping list**
 - `POST /api/lists` — create a list, returns a share code (e.g. `VRB8LD`)
-- `GET /api/lists/:code` — fetch a list and its items
+- `GET /api/lists/:code` — fetch a list and its shopping-list items
 - `POST /api/lists/:code/items` — add an item
 - `PATCH /api/lists/:code/items/:id` — update an item (e.g. toggle checked)
 - `DELETE /api/lists/:code/items/:id` — remove an item
 - `POST /api/lists/:code/clear-checked` — remove all checked items
-- A Socket.IO connection joins a room per list code and broadcasts the full item list on every change, so everyone viewing that list updates live.
+
+**Inventory** — item, quantity, and expiry date are required; weight, purchase date, and price are optional
+- `POST /api/lists/:code/inventory` — add an inventory item (`name`, `quantity`, `weightValue`, `weightUnit`, `expiryDate`, `purchaseDate?`, `price?`)
+- `PATCH /api/lists/:code/inventory/:id` — update any subset of those fields
+- `DELETE /api/lists/:code/inventory/:id` — remove an item
+
+A Socket.IO connection joins a room per list code; the server broadcasts the full `items` list and the full `inventory` list on every change to either, so everyone viewing that list updates live.
 
 ### Running the server locally
 
