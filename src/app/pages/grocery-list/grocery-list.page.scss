@@ -1,14 +1,28 @@
 .empty-state {
   text-align: center;
   color: var(--ion-color-medium);
-  padding: 3rem 1.5rem;
+  padding: 4rem 1.5rem;
+
+  ion-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin: 0;
+  }
 }
 
 .category-header {
-  --min-height: 32px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  font-weight: 600;
+
+  ion-icon {
+    font-size: 1rem;
+    margin-inline-end: 0.5rem;
+  }
 }
 
 ion-label.checked {
@@ -19,19 +33,31 @@ ion-label.checked {
 .add-item-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0.75rem;
+  gap: 0.4rem;
+  padding: 0.25rem 0.5rem;
 
-  ion-input {
+  ion-item {
+    --padding-start: 0.5rem;
+    --inner-padding-end: 0.25rem;
+    --min-height: 44px;
+  }
+
+  .name-input {
     flex: 1;
+    min-width: 0;
   }
 
   .quantity-input {
-    flex: 0 0 60px;
+    flex: 0 0 56px;
   }
 
   .category-select {
     flex: 0 0 auto;
     max-width: 110px;
+  }
+
+  ion-button {
+    flex: 0 0 auto;
+    margin: 0;
   }
 }

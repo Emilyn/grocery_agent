@@ -1,13 +1,21 @@
 import { Component, computed, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { addIcons } from 'ionicons';
-import { addOutline, trashOutline, trashBinOutline } from 'ionicons/icons';
+import {
+  add,
+  trashOutline,
+  trashBinOutline,
+  cubeOutline,
+  scaleOutline,
+  calendarOutline,
+  cashOutline
+} from 'ionicons/icons';
 import {
   IonContent,
   IonList,
   IonItem,
+  IonItemDivider,
   IonLabel,
-  IonNote,
   IonCheckbox,
   IonItemSliding,
   IonItemOptions,
@@ -35,8 +43,8 @@ import { AddInventoryItemModalComponent } from './add-inventory-item-modal/add-i
     IonContent,
     IonList,
     IonItem,
+    IonItemDivider,
     IonLabel,
-    IonNote,
     IonCheckbox,
     IonItemSliding,
     IonItemOptions,
@@ -59,7 +67,7 @@ export class InventoryPage {
   readonly usedItems = computed(() => this.inventory.items().filter((item) => item.used));
 
   constructor() {
-    addIcons({ addOutline, trashOutline, trashBinOutline });
+    addIcons({ add, trashOutline, trashBinOutline, cubeOutline, scaleOutline, calendarOutline, cashOutline });
   }
 
   expiryLabel(item: InventoryItem): string {

@@ -11,61 +11,69 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-item>
-    <ion-input label="Item name" label-placement="floating" [(ngModel)]="name"></ion-input>
-  </ion-item>
+  <ion-list>
+    <ion-item>
+      <ion-icon slot="start" name="pricetag-outline" color="medium"></ion-icon>
+      <ion-input label="Item name" label-placement="floating" [(ngModel)]="name"></ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-input
-      label="Quantity"
-      label-placement="floating"
-      type="number"
-      min="1"
-      [(ngModel)]="quantity"
-    ></ion-input>
-  </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="list-outline" color="medium"></ion-icon>
+      <ion-input
+        label="Quantity"
+        label-placement="floating"
+        type="number"
+        min="1"
+        [(ngModel)]="quantity"
+      ></ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-input
-      label="Weight (optional)"
-      label-placement="floating"
-      type="number"
-      min="0"
-      [(ngModel)]="weightValue"
-    ></ion-input>
-    <ion-select slot="end" [(ngModel)]="weightUnit" interface="popover">
-      @for (unit of weightUnits; track unit) {
-        <ion-select-option [value]="unit">{{ unit }}</ion-select-option>
-      }
-    </ion-select>
-  </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="scale-outline" color="medium"></ion-icon>
+      <ion-input
+        label="Weight (optional)"
+        label-placement="floating"
+        type="number"
+        min="0"
+        [(ngModel)]="weightValue"
+      ></ion-input>
+      <ion-select slot="end" [(ngModel)]="weightUnit" interface="popover">
+        @for (unit of weightUnits; track unit) {
+          <ion-select-option [value]="unit">{{ unit }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
 
-  <ion-item>
-    <ion-input
-      label="Expiry date"
-      label-placement="floating"
-      type="date"
-      [(ngModel)]="expiryDate"
-    ></ion-input>
-  </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="calendar-outline" color="medium"></ion-icon>
+      <ion-input
+        label="Expiry date"
+        label-placement="floating"
+        type="date"
+        [(ngModel)]="expiryDate"
+      ></ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-input
-      label="Purchase date (optional)"
-      label-placement="floating"
-      type="date"
-      [(ngModel)]="purchaseDate"
-    ></ion-input>
-  </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="cart-outline" color="medium"></ion-icon>
+      <ion-input
+        label="Purchase date (optional)"
+        label-placement="floating"
+        type="date"
+        [(ngModel)]="purchaseDate"
+      ></ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-input
-      label="Price paid (optional)"
-      label-placement="floating"
-      type="number"
-      min="0"
-      step="0.01"
-      [(ngModel)]="price"
-    ></ion-input>
-  </ion-item>
+    <ion-item lines="none">
+      <ion-icon slot="start" name="cash-outline" color="medium"></ion-icon>
+      <ion-input
+        label="Price paid (optional)"
+        label-placement="floating"
+        type="number"
+        min="0"
+        step="0.01"
+        [(ngModel)]="price"
+      ></ion-input>
+    </ion-item>
+  </ion-list>
 </ion-content>

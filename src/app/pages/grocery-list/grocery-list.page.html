@@ -7,6 +7,7 @@
 <ion-content>
   @if (groupedItems().length === 0) {
     <div class="empty-state">
+      <ion-icon name="basket-outline"></ion-icon>
       <p>Your list is empty. Add something below to get started.</p>
     </div>
   }
@@ -14,9 +15,10 @@
   @for (group of groupedItems(); track group[0]) {
     <ion-list>
       <ion-item-group>
-        <ion-item lines="none" class="category-header">
-          <ion-label color="medium">{{ group[0] }}</ion-label>
-        </ion-item>
+        <ion-item-divider class="category-header">
+          <ion-icon [name]="categoryIcon(group[0])" slot="start" color="primary"></ion-icon>
+          <ion-label>{{ group[0] }}</ion-label>
+        </ion-item-divider>
         @for (item of group[1]; track item.id) {
           <ion-item-sliding>
             <ion-item>
@@ -27,8 +29,8 @@
               ></ion-checkbox>
               <ion-label [class.checked]="item.checked">
                 {{ item.name }}
-                <ion-note>x{{ item.quantity }}</ion-note>
               </ion-label>
+              <ion-badge slot="end" color="medium">x{{ item.quantity }}</ion-badge>
             </ion-item>
             <ion-item-options side="end">
               <ion-item-option color="danger" (click)="removeItem(item.id)">
@@ -45,28 +47,25 @@
 <ion-footer>
   <ion-toolbar>
     <div class="add-item-row">
-      <ion-input
-        placeholder="Add an item"
-        [(ngModel)]="newItemName"
-        (keyup.enter)="addItem()"
-      ></ion-input>
-      <ion-input
-        type="number"
-        min="1"
-        class="quantity-input"
-        [(ngModel)]="newItemQuantity"
-      ></ion-input>
-      <ion-select
-        interface="popover"
-        [(ngModel)]="newItemCategory"
-        class="category-select"
-      >
-        @for (category of categories; track category) {
-          <ion-select-option [value]="category">{{ category }}</ion-select-option>
-        }
-      </ion-select>
-      <ion-button (click)="addItem()">
-        <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+      <ion-item lines="none" class="name-input">
+        <ion-input
+          placeholder="Add an item"
+          [(ngModel)]="newItemName"
+          (keyup.enter)="addItem()"
+        ></ion-input>
+      </ion-item>
+      <ion-item lines="none" class="quantity-input">
+        <ion-input type="number" min="1" [(ngModel)]="newItemQuantity"></ion-input>
+      </ion-item>
+      <ion-item lines="none" class="category-select">
+        <ion-select interface="popover" [(ngModel)]="newItemCategory">
+          @for (category of categories; track category) {
+            <ion-select-option [value]="category">{{ category }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      <ion-button (click)="addItem()" shape="round">
+        <ion-icon slot="icon-only" name="add"></ion-icon>
       </ion-button>
     </div>
   </ion-toolbar>

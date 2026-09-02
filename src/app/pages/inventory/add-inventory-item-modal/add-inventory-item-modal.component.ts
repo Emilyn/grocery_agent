@@ -1,5 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { addIcons } from 'ionicons';
+import {
+  pricetagOutline,
+  listOutline,
+  scaleOutline,
+  calendarOutline,
+  cartOutline,
+  cashOutline
+} from 'ionicons/icons';
 import {
   ModalController,
   IonHeader,
@@ -8,7 +17,9 @@ import {
   IonButtons,
   IonButton,
   IonContent,
+  IonList,
   IonItem,
+  IonIcon,
   IonInput,
   IonSelect,
   IonSelectOption
@@ -25,7 +36,9 @@ import { NewInventoryItem, WEIGHT_UNITS } from '../../../models/inventory-item.m
     IonButtons,
     IonButton,
     IonContent,
+    IonList,
     IonItem,
+    IonIcon,
     IonInput,
     IonSelect,
     IonSelectOption
@@ -36,6 +49,10 @@ export class AddInventoryItemModalComponent {
   private readonly modalController = inject(ModalController);
 
   readonly weightUnits = WEIGHT_UNITS;
+
+  constructor() {
+    addIcons({ pricetagOutline, listOutline, scaleOutline, calendarOutline, cartOutline, cashOutline });
+  }
 
   name = '';
   quantity = 1;

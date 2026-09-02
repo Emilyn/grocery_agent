@@ -1,12 +1,15 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { addIcons } from 'ionicons';
+import { basket, addCircleOutline, keyOutline, peopleOutline } from 'ionicons/icons';
 import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
+  IonCard,
+  IonCardContent,
+  IonItem,
   IonButton,
   IonInput,
+  IonIcon,
   IonText,
   IonSpinner
 } from '@ionic/angular';
@@ -17,12 +20,13 @@ import { ListSessionService } from '../../services/list-session.service';
   host: { class: 'ion-page' },
   imports: [
     FormsModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
+    IonCard,
+    IonCardContent,
+    IonItem,
     IonButton,
     IonInput,
+    IonIcon,
     IonText,
     IonSpinner
   ],
@@ -33,6 +37,10 @@ export class JoinListPage {
   readonly session = inject(ListSessionService);
 
   joinCode = '';
+
+  constructor() {
+    addIcons({ basket, addCircleOutline, keyOutline, peopleOutline });
+  }
 
   createList(): void {
     void this.session.createList();

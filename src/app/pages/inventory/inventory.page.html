@@ -7,6 +7,7 @@
 <ion-content>
   @if (unusedItems().length === 0 && usedItems().length === 0) {
     <div class="empty-state">
+      <ion-icon name="cube-outline"></ion-icon>
       <p>No inventory yet. Tap + to add what's in your pantry.</p>
     </div>
   }
@@ -14,9 +15,9 @@
   @if (unusedItems().length > 0) {
     <ion-list>
       <ion-item-group>
-        <ion-item lines="none" class="section-header">
-          <ion-label color="medium">Unused</ion-label>
-        </ion-item>
+        <ion-item-divider class="section-header">
+          <ion-label>Unused</ion-label>
+        </ion-item-divider>
         @for (item of unusedItems(); track item.id) {
           <ion-item-sliding>
             <ion-item>
@@ -24,18 +25,18 @@
               <ion-label>
                 <h2>
                   {{ item.name }}
-                  <ion-note>x{{ item.quantity }}</ion-note>
+                  <ion-badge color="medium">x{{ item.quantity }}</ion-badge>
                 </h2>
-                <p>
+                <p class="details">
                   @if (item.weightValue) {
-                    {{ item.weightValue }}{{ item.weightUnit }} ·
+                    <span class="detail"><ion-icon name="scale-outline"></ion-icon>{{ item.weightValue }}{{ item.weightUnit }}</span>
                   }
-                  Expires {{ item.expiryDate }}
+                  <span class="detail"><ion-icon name="calendar-outline"></ion-icon>{{ item.expiryDate }}</span>
                   @if (item.purchaseDate) {
-                    · bought {{ item.purchaseDate }}
+                    <span class="detail muted">bought {{ item.purchaseDate }}</span>
                   }
                   @if (item.price != null) {
-                    · {{ item.price | currency }}
+                    <span class="detail"><ion-icon name="cash-outline"></ion-icon>{{ item.price | currency }}</span>
                   }
                 </p>
               </ion-label>
@@ -55,9 +56,9 @@
   @if (usedItems().length > 0) {
     <ion-list>
       <ion-item-group>
-        <ion-item lines="none" class="section-header">
-          <ion-label color="medium">Used</ion-label>
-        </ion-item>
+        <ion-item-divider class="section-header">
+          <ion-label>Used</ion-label>
+        </ion-item-divider>
         @for (item of usedItems(); track item.id) {
           <ion-item-sliding>
             <ion-item>
@@ -65,18 +66,18 @@
               <ion-label class="used">
                 <h2>
                   {{ item.name }}
-                  <ion-note>x{{ item.quantity }}</ion-note>
+                  <ion-badge color="medium">x{{ item.quantity }}</ion-badge>
                 </h2>
-                <p>
+                <p class="details">
                   @if (item.weightValue) {
-                    {{ item.weightValue }}{{ item.weightUnit }} ·
+                    <span class="detail"><ion-icon name="scale-outline"></ion-icon>{{ item.weightValue }}{{ item.weightUnit }}</span>
                   }
-                  Expires {{ item.expiryDate }}
+                  <span class="detail"><ion-icon name="calendar-outline"></ion-icon>{{ item.expiryDate }}</span>
                   @if (item.purchaseDate) {
-                    · bought {{ item.purchaseDate }}
+                    <span class="detail muted">bought {{ item.purchaseDate }}</span>
                   }
                   @if (item.price != null) {
-                    · {{ item.price | currency }}
+                    <span class="detail"><ion-icon name="cash-outline"></ion-icon>{{ item.price | currency }}</span>
                   }
                 </p>
               </ion-label>
@@ -94,7 +95,7 @@
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="openAddModal()">
-      <ion-icon name="add-outline"></ion-icon>
+      <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 </ion-content>

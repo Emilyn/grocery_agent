@@ -1,28 +1,59 @@
 .empty-state {
   text-align: center;
   color: var(--ion-color-medium);
-  padding: 3rem 1.5rem;
+  padding: 4rem 1.5rem;
+
+  ion-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.section-header {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
 }
 
 ion-item ion-label h2 {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
-ion-item ion-label p {
-  font-size: 0.8rem;
+ion-item ion-label .details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-size: 0.78rem;
   color: var(--ion-color-medium);
+  margin-top: 0.15rem;
 }
 
-.section-header {
-  --min-height: 32px;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+.detail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+
+  ion-icon {
+    font-size: 0.9rem;
+  }
+}
+
+.detail.muted {
+  opacity: 0.8;
 }
 
 ion-label.used h2 {
   text-decoration: line-through;
+  opacity: 0.5;
+}
+
+ion-label.used .details {
   opacity: 0.5;
 }

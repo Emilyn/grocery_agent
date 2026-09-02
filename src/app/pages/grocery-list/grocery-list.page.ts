@@ -1,11 +1,25 @@
 import { Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
-import { addCircleOutline, trashOutline, trashBinOutline } from 'ionicons/icons';
+import {
+  add,
+  trashOutline,
+  trashBinOutline,
+  basketOutline,
+  leafOutline,
+  waterOutline,
+  pizzaOutline,
+  fishOutline,
+  fileTrayStackedOutline,
+  snowOutline,
+  homeOutline,
+  ellipsisHorizontalOutline
+} from 'ionicons/icons';
 import {
   IonContent,
   IonList,
   IonItem,
+  IonItemDivider,
   IonLabel,
   IonCheckbox,
   IonItemSliding,
@@ -13,17 +27,18 @@ import {
   IonItemOption,
   IonIcon,
   IonButton,
+  IonBadge,
   IonFooter,
   IonToolbar,
   IonInput,
   IonSelect,
   IonSelectOption,
-  IonNote,
   IonItemGroup
 } from '@ionic/angular';
 import { ListHeaderComponent } from '../../components/list-header/list-header.component';
 import { GroceryListService } from '../../services/grocery-list.service';
 import { GROCERY_CATEGORIES, GroceryItem } from '../../models/grocery-item.model';
+import { categoryIcon } from '../../utils/category-icons';
 
 @Component({
   selector: 'app-grocery-list',
@@ -34,6 +49,7 @@ import { GROCERY_CATEGORIES, GroceryItem } from '../../models/grocery-item.model
     IonContent,
     IonList,
     IonItem,
+    IonItemDivider,
     IonLabel,
     IonCheckbox,
     IonItemSliding,
@@ -41,12 +57,12 @@ import { GROCERY_CATEGORIES, GroceryItem } from '../../models/grocery-item.model
     IonItemOption,
     IonIcon,
     IonButton,
+    IonBadge,
     IonFooter,
     IonToolbar,
     IonInput,
     IonSelect,
     IonSelectOption,
-    IonNote,
     IonItemGroup
   ],
   templateUrl: './grocery-list.page.html',
@@ -56,6 +72,7 @@ export class GroceryListPage {
   private readonly groceryList = inject(GroceryListService);
 
   readonly categories = GROCERY_CATEGORIES;
+  readonly categoryIcon = categoryIcon;
   newItemName = '';
   newItemQuantity = 1;
   newItemCategory: string = GROCERY_CATEGORIES[0];
@@ -74,7 +91,20 @@ export class GroceryListPage {
   );
 
   constructor() {
-    addIcons({ addCircleOutline, trashOutline, trashBinOutline });
+    addIcons({
+      add,
+      trashOutline,
+      trashBinOutline,
+      basketOutline,
+      leafOutline,
+      waterOutline,
+      pizzaOutline,
+      fishOutline,
+      fileTrayStackedOutline,
+      snowOutline,
+      homeOutline,
+      ellipsisHorizontalOutline
+    });
   }
 
   async addItem(): Promise<void> {

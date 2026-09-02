@@ -2,13 +2,13 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="leaveList()">
-        <ion-icon slot="icon-only" name="exit-outline"></ion-icon>
+        <ion-icon slot="icon-only" name="exit-outline" color="medium"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title>{{ title }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="showShareCode()">
-        <ion-icon slot="icon-only" name="share-social-outline"></ion-icon>
+        <ion-icon slot="icon-only" name="share-social-outline" color="primary"></ion-icon>
       </ion-button>
       <ng-content select="[end-extra]"></ng-content>
     </ion-buttons>

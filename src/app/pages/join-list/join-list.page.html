@@ -1,45 +1,53 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Grocery Agent</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding">
+<ion-content class="ion-padding" fullscreen>
   <div class="join-list">
-    <p>Start a new shared grocery list, or join one with a code someone shared with you.</p>
+    <div class="brand">
+      <ion-icon name="basket" color="primary"></ion-icon>
+      <h1>Grocery Agent</h1>
+      <p>Start a new shared list, or join one with a code someone sent you.</p>
+    </div>
 
-    <ion-button expand="block" (click)="createList()" [disabled]="session.loading()">
-      @if (session.loading()) {
-        <ion-spinner name="dots"></ion-spinner>
-      } @else {
-        Create a new list
-      }
-    </ion-button>
+    <ion-card>
+      <ion-card-content>
+        <ion-button expand="block" (click)="createList()" [disabled]="session.loading()">
+          @if (session.loading()) {
+            <ion-spinner name="dots"></ion-spinner>
+          } @else {
+            <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+            Create a new list
+          }
+        </ion-button>
 
-    <div class="divider">or</div>
+        <div class="divider">
+          <span>or join an existing list</span>
+        </div>
 
-    <ion-input
-      label="List code"
-      label-placement="floating"
-      fill="outline"
-      placeholder="e.g. VRB8LD"
-      [(ngModel)]="joinCode"
-      (keyup.enter)="joinList()"
-    ></ion-input>
+        <ion-item lines="none" class="code-input">
+          <ion-icon slot="start" name="key-outline" color="medium"></ion-icon>
+          <ion-input
+            label="List code"
+            label-placement="floating"
+            placeholder="e.g. VRB8LD"
+            [(ngModel)]="joinCode"
+            (keyup.enter)="joinList()"
+          ></ion-input>
+        </ion-item>
 
-    <ion-button
-      expand="block"
-      fill="outline"
-      (click)="joinList()"
-      [disabled]="session.loading() || !joinCode.trim()"
-    >
-      Join list
-    </ion-button>
+        <ion-button
+          expand="block"
+          fill="outline"
+          (click)="joinList()"
+          [disabled]="session.loading() || !joinCode.trim()"
+        >
+          <ion-icon slot="start" name="people-outline"></ion-icon>
+          Join list
+        </ion-button>
 
-    @if (session.error(); as error) {
-      <ion-text color="danger">
-        <p>{{ error }}</p>
-      </ion-text>
-    }
+        @if (session.error(); as error) {
+          <ion-text color="danger">
+            <p class="error">{{ error }}</p>
+          </ion-text>
+        }
+      </ion-card-content>
+    </ion-card>
   </div>
 </ion-content>
