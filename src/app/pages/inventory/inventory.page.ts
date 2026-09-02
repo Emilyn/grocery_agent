@@ -11,7 +11,8 @@ import {
   cashOutline,
   ellipseOutline,
   timeOutline,
-  checkmarkCircle
+  checkmarkCircle,
+  cartOutline
 } from 'ionicons/icons';
 import {
   IonContent,
@@ -104,7 +105,8 @@ export class InventoryPage {
       cashOutline,
       ellipseOutline,
       timeOutline,
-      checkmarkCircle
+      checkmarkCircle,
+      cartOutline
     });
   }
 
@@ -136,6 +138,10 @@ export class InventoryPage {
 
   removeItem(id: string): void {
     void this.inventory.removeItem(id);
+  }
+
+  finishItem(id: string): void {
+    void this.inventory.finishItem(id);
   }
 
   clearUsed(): void {

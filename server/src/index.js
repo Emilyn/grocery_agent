@@ -264,6 +264,39 @@ app.patch('/api/lists/:code/inventory/:itemId', async (req, res) => {
   res.status(204).end();
 });
 
+app.post('/api/lists/:code/inventory/:itemId/finish', async (req, res) => {
+  const list = await getListByCode(req.params.code.toUpperCase());
+  if (!list) return res.status(404).json({ error: 'List not found' });
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const { rows } = await client.query(
+      'DELETE FROM inventory_items WHERE id = $1 AND list_id = $2 RETURNING name, quantity',
+      [req.params.itemId, list.id]
+    );
+    if (rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    const { name, quantity } = rows[0];
+    await client.query(
+      'INSERT INTO items (id, list_id, name, quantity, category) VALUES ($1, $2, $3, $4, $5)',
+      [crypto.randomUUID(), list.id, name, quantity, 'Other']
+    );
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+
+  await broadcastInventory(list.share_code, list.id);
+  await broadcastItems(list.share_code, list.id);
+  res.status(204).end();
+});
+
 app.post('/api/lists/:code/inventory/clear-used', async (req, res) => {
   const list = await getListByCode(req.params.code.toUpperCase());
   if (!list) return res.status(404).json({ error: 'List not found' });

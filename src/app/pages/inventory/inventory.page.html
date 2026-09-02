@@ -85,6 +85,9 @@
         }
       </ion-item>
       <ion-item-options side="end">
+        <ion-item-option color="tertiary" (click)="finishItem(item.id)">
+          <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
+        </ion-item-option>
         <ion-item-option color="danger" (click)="removeItem(item.id)">
           <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
         </ion-item-option>

@@ -48,4 +48,11 @@ export class InventoryService {
     if (!code) return;
     await fetch(`${API_BASE_URL}/api/lists/${code}/inventory/clear-used`, { method: 'POST' });
   }
+
+  /** Removes the item from inventory and adds it to the shopping list. */
+  async finishItem(id: string): Promise<void> {
+    const code = this.session.listCode();
+    if (!code) return;
+    await fetch(`${API_BASE_URL}/api/lists/${code}/inventory/${id}/finish`, { method: 'POST' });
+  }
 }
