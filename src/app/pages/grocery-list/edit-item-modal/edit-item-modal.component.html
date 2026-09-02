@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Edit Item</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()" [strong]="true" [disabled]="!canSave">Save</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item>
+      <ion-input label="Item name" label-placement="floating" [(ngModel)]="name"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        label="Quantity"
+        label-placement="floating"
+        type="number"
+        min="1"
+        [(ngModel)]="quantity"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item lines="none">
+      <ion-select label="Category" label-placement="floating" [(ngModel)]="category">
+        @for (cat of categories; track cat) {
+          <ion-select-option [value]="cat">{{ cat }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+  </ion-list>
+</ion-content>

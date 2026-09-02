@@ -62,7 +62,7 @@
         >
           <ion-icon [name]="statusIcon(item)" [color]="statusColor(item)" slot="icon-only"></ion-icon>
         </ion-button>
-        <ion-label [class.used]="item.status === 'used'">
+        <ion-label [class.used]="item.status === 'used'" (click)="editItem(item)">
           <h2>
             {{ item.name }}
             <ion-badge color="medium">x{{ item.quantity }}</ion-badge>

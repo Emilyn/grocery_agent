@@ -181,4 +181,16 @@ export class InventoryPage {
       await this.inventory.addItem(data);
     }
   }
+
+  async editItem(item: InventoryItem): Promise<void> {
+    const modal = await this.modalController.create({
+      component: AddInventoryItemModalComponent,
+      componentProps: { editingItem: item }
+    });
+    await modal.present();
+    const { data, role } = await modal.onDidDismiss();
+    if (role === 'confirm' && data) {
+      await this.inventory.updateItem(item.id, data);
+    }
+  }
 }

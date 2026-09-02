@@ -117,18 +117,55 @@ app.post('/api/lists/:code/items', async (req, res) => {
   res.status(201).json(item);
 });
 
+const ITEM_FIELD_COLUMNS = {
+  name: 'name',
+  quantity: 'quantity',
+  category: 'category',
+  checked: 'checked'
+};
+
 app.patch('/api/lists/:code/items/:itemId', async (req, res) => {
   const list = await getListByCode(req.params.code.toUpperCase());
   if (!list) return res.status(404).json({ error: 'List not found' });
 
-  const { checked } = req.body;
-  if (typeof checked !== 'boolean') {
-    return res.status(400).json({ error: 'checked (boolean) is required' });
+  const sets = [];
+  const values = [];
+  let i = 1;
+
+  for (const [key, column] of Object.entries(ITEM_FIELD_COLUMNS)) {
+    if (!(key in req.body)) continue;
+    let value = req.body[key];
+
+    if (key === 'name') {
+      if (typeof value !== 'string' || !value.trim()) {
+        return res.status(400).json({ error: 'name must be a non-empty string' });
+      }
+      value = value.trim();
+    }
+    if (key === 'quantity') {
+      if (!Number.isFinite(value) || value <= 0) {
+        return res.status(400).json({ error: 'quantity must be a positive number' });
+      }
+      value = Math.floor(value);
+    }
+    if (key === 'category' && (typeof value !== 'string' || !value.trim())) {
+      return res.status(400).json({ error: 'category must be a non-empty string' });
+    }
+    if (key === 'checked' && typeof value !== 'boolean') {
+      return res.status(400).json({ error: 'checked must be a boolean' });
+    }
+
+    sets.push(`${column} = $${i}`);
+    values.push(value);
+    i++;
   }
 
+  if (sets.length === 0) return res.status(400).json({ error: 'No valid fields to update' });
+
+  values.push(req.params.itemId, list.id);
   const { rowCount } = await pool.query(
-    'UPDATE items SET checked = $1 WHERE id = $2 AND list_id = $3',
-    [checked, req.params.itemId, list.id]
+    `UPDATE items SET ${sets.join(', ')} WHERE id = $${i} AND list_id = $${i + 1}`,
+    values
   );
   if (rowCount === 0) return res.status(404).json({ error: 'Item not found' });
 

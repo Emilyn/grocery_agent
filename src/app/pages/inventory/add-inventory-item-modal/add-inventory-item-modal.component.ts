@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import {
@@ -24,7 +24,7 @@ import {
   IonSelect,
   IonSelectOption
 } from '@ionic/angular';
-import { NewInventoryItem, WEIGHT_UNITS } from '../../../models/inventory-item.model';
+import { InventoryItem, NewInventoryItem, WEIGHT_UNITS } from '../../../models/inventory-item.model';
 
 @Component({
   selector: 'app-add-inventory-item-modal',
@@ -45,7 +45,9 @@ import { NewInventoryItem, WEIGHT_UNITS } from '../../../models/inventory-item.m
   ],
   templateUrl: './add-inventory-item-modal.component.html'
 })
-export class AddInventoryItemModalComponent {
+export class AddInventoryItemModalComponent implements OnInit {
+  @Input() editingItem: InventoryItem | null = null;
+
   private readonly modalController = inject(ModalController);
 
   readonly weightUnits = WEIGHT_UNITS;
@@ -61,6 +63,17 @@ export class AddInventoryItemModalComponent {
   expiryDate = '';
   purchaseDate = '';
   price: number | null = null;
+
+  ngOnInit(): void {
+    if (!this.editingItem) return;
+    this.name = this.editingItem.name;
+    this.quantity = this.editingItem.quantity;
+    this.weightValue = this.editingItem.weightValue;
+    this.weightUnit = this.editingItem.weightUnit ?? WEIGHT_UNITS[0];
+    this.expiryDate = this.editingItem.expiryDate;
+    this.purchaseDate = this.editingItem.purchaseDate ?? '';
+    this.price = this.editingItem.price;
+  }
 
   get canSave(): boolean {
     return this.name.trim().length > 0 && this.expiryDate.length > 0;

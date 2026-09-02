@@ -27,7 +27,7 @@
                 [checked]="item.checked"
                 (ionChange)="toggleChecked(item)"
               ></ion-checkbox>
-              <ion-label [class.checked]="item.checked">
+              <ion-label [class.checked]="item.checked" (click)="editItem(item)">
                 {{ item.name }}
               </ion-label>
               <ion-badge slot="end" color="medium">x{{ item.quantity }}</ion-badge>

@@ -25,6 +25,10 @@
   }
 }
 
+ion-item ion-label {
+  cursor: pointer;
+}
+
 ion-label.checked {
   text-decoration: line-through;
   opacity: 0.5;

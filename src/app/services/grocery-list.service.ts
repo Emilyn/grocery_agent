@@ -24,12 +24,16 @@ export class GroceryListService {
   }
 
   async toggleChecked(id: string, checked: boolean): Promise<void> {
+    await this.updateItem(id, { checked });
+  }
+
+  async updateItem(id: string, patch: Partial<Omit<GroceryItem, 'id'>>): Promise<void> {
     const code = this.session.listCode();
     if (!code) return;
     await fetch(`${API_BASE_URL}/api/lists/${code}/items/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ checked })
+      body: JSON.stringify(patch)
     });
   }
 

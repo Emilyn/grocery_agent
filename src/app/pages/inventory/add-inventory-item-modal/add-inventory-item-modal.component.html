@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-button (click)="cancel()">Cancel</ion-button>
     </ion-buttons>
-    <ion-title>Add Inventory Item</ion-title>
+    <ion-title>{{ editingItem ? 'Edit Inventory Item' : 'Add Inventory Item' }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="save()" [strong]="true" [disabled]="!canSave">Save</ion-button>
     </ion-buttons>

@@ -33,12 +33,14 @@ import {
   IonInput,
   IonSelect,
   IonSelectOption,
-  IonItemGroup
+  IonItemGroup,
+  ModalController
 } from '@ionic/angular';
 import { ListHeaderComponent } from '../../components/list-header/list-header.component';
 import { GroceryListService } from '../../services/grocery-list.service';
 import { GROCERY_CATEGORIES, GroceryItem } from '../../models/grocery-item.model';
 import { categoryIcon } from '../../utils/category-icons';
+import { EditItemModalComponent } from './edit-item-modal/edit-item-modal.component';
 
 @Component({
   selector: 'app-grocery-list',
@@ -70,6 +72,7 @@ import { categoryIcon } from '../../utils/category-icons';
 })
 export class GroceryListPage {
   private readonly groceryList = inject(GroceryListService);
+  private readonly modalController = inject(ModalController);
 
   readonly categories = GROCERY_CATEGORIES;
   readonly categoryIcon = categoryIcon;
@@ -125,5 +128,17 @@ export class GroceryListPage {
 
   clearChecked(): void {
     void this.groceryList.clearChecked();
+  }
+
+  async editItem(item: GroceryItem): Promise<void> {
+    const modal = await this.modalController.create({
+      component: EditItemModalComponent,
+      componentProps: { item }
+    });
+    await modal.present();
+    const { data, role } = await modal.onDidDismiss();
+    if (role === 'confirm' && data) {
+      await this.groceryList.updateItem(item.id, data);
+    }
   }
 }

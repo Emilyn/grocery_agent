@@ -32,6 +32,10 @@
   }
 }
 
+ion-item ion-label {
+  cursor: pointer;
+}
+
 ion-item ion-label h2 {
   display: flex;
   align-items: center;
