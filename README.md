@@ -58,10 +58,11 @@ The app talks to a small API for shared, synced grocery lists:
 - `DELETE /api/lists/:code/items/:id` — remove an item
 - `POST /api/lists/:code/clear-checked` — remove all checked items
 
-**Inventory** — item, quantity, and expiry date are required; weight, purchase date, and price are optional
-- `POST /api/lists/:code/inventory` — add an inventory item (`name`, `quantity`, `weightValue`, `weightUnit`, `expiryDate`, `purchaseDate?`, `price?`)
-- `PATCH /api/lists/:code/inventory/:id` — update any subset of those fields
+**Inventory** — item, quantity, and expiry date are required; weight, purchase date, and price are optional. Each item also tracks a `used` flag (defaults to `false`) so the tab can show what's still in the pantry vs. what's been used up.
+- `POST /api/lists/:code/inventory` — add an inventory item (`name`, `quantity`, `weightValue?`, `weightUnit?`, `expiryDate`, `purchaseDate?`, `price?`)
+- `PATCH /api/lists/:code/inventory/:id` — update any subset of those fields, or `used`
 - `DELETE /api/lists/:code/inventory/:id` — remove an item
+- `POST /api/lists/:code/inventory/clear-used` — remove all items marked used
 
 A Socket.IO connection joins a room per list code; the server broadcasts the full `items` list and the full `inventory` list on every change to either, so everyone viewing that list updates live.
 
